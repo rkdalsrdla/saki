@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Language" content="ko-KR">
+    <meta name="X-UA-Compatible" type="equiv" content="IE=edge" />
+    <meta name="viewport" type="" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi, width=device-width" />
+    <title>사키투력계산기</title>
+    <style>
+        html {
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+과거: <input type="number" id="as_is_1st" maxlength="4" oninput="maxLengthCheck(this)" inputmode="numeric" /><select id="as_is_1st_unit"></select>
+<br />
+현재: <input type="number" id="to_be_1st" maxlength="4" oninput="maxLengthCheck(this)" inputmode="numeric" /><select id="to_be_1st_unit"></select>
+<br />
+<br />
+<button type="button" onclick="calc();">몇배?</button>
+<br />
+<br />
+* 현재의 단위는 과거보다 커야만 해유~
+<br />
+* 4단위 증가까지만 계산할 수 있어유~ (ex. 억 => 자, 극 => 불)
+<br />
+<br />
+* 제공: 2섭 구미호길드
+</body>
+
+<script>
+    let unit = {
+        '만':1,//10**(4*1),
+        '억':2,//10**(4*2),
+        '조':3,//10**(4*3),
+        '경':4,//10**(4*4),
+        '해':5,//10**(4*5),
+        '자':6,//10**(4*6),
+        '양':7,//10**(4*7),
+        '구':8,//10**(4*8),
+        '간':9,//10**(4*9),
+        '정':10,//10**(4*10),
+        '재':11,//10**(4*11),
+        '극':12,//10**(4*12),
+        '항':13,//10**(4*13),
+        '아':14,//10**(4*14),
+        '나':15,//10**(4*15),
+        '불':16,//10**(4*16),
+        '무':17,
+        '다음단계 무-만':18,
+        '다음단계 무-억':19,
+        '다음단계 무-조':20,
+        '다음단계 무-경':21
+    };
+
+    function getSelectBox()
+    {
+        var resultHtml = '';
+
+        for(var key in unit) {
+            resultHtml += '<option value="' + key + '">' + key + '</option>';
+        }
+
+        return resultHtml;
+    }
+
+    var selectBoxHtml = getSelectBox();
+
+    document.getElementById('as_is_1st_unit').innerHTML = selectBoxHtml;
+    document.getElementById('to_be_1st_unit').innerHTML = selectBoxHtml;
+
+    function calc()
+    {
+        var asIs = parseInt(document.getElementById('as_is_1st').value);
+        var asIsUnit = document.getElementById('as_is_1st_unit').options[document.getElementById('as_is_1st_unit').selectedIndex].value;
+        var asIsUnitSeq = unit[asIsUnit];
+        var toBe = parseInt(document.getElementById('to_be_1st').value);
+        var toBeUnit = document.getElementById('to_be_1st_unit').options[document.getElementById('to_be_1st_unit').selectedIndex].value;
+        var toBeUnitSeq = unit[toBeUnit];
+
+        if (!asIs || !toBe) {
+            alert('입력은 하시쥬~');
+            return false;
+        }
+
+        if (asIsUnitSeq >= toBeUnitSeq) {
+            alert('현재의 단위는 과거보다 커야만 해유~');
+            return false;
+        }
+
+        var gapUnit = toBeUnitSeq - asIsUnitSeq;
+
+        if (gapUnit > 4) {
+            alert('4단위 증가까지만 계산할 수 있어유~ (ex. 억 => 자, 극 => 불)');
+            return false;
+        }
+
+        var diff = Math.round((toBe * (10**(4*gapUnit))) / asIs);
+
+        alert(diff.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '배');
+    }
+
+    function maxLengthCheck(object)
+    {
+        if(object.value.length > object.maxLength) {
+            object.value = object.value.slice(0, object.maxLength);
+        }
+    }
+</script>
+</html>
