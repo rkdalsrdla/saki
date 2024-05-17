@@ -25,35 +25,45 @@
 <br />
 * 현재의 단위는 과거보다 커야만 해유~
 <br />
-* 4단위 증가까지만 계산할 수 있어유~ (ex. 억 => 자, 극 => 불)
-<br />
 <br />
 * 제공: 2섭 구미호길드
 </body>
 
 <script>
     let unit = {
-        '만':1,//10**(4*1),
-        '억':2,//10**(4*2),
-        '조':3,//10**(4*3),
-        '경':4,//10**(4*4),
-        '해':5,//10**(4*5),
-        '자':6,//10**(4*6),
-        '양':7,//10**(4*7),
-        '구':8,//10**(4*8),
-        '간':9,//10**(4*9),
-        '정':10,//10**(4*10),
-        '재':11,//10**(4*11),
-        '극':12,//10**(4*12),
-        '항':13,//10**(4*13),
-        '아':14,//10**(4*14),
-        '나':15,//10**(4*15),
-        '불':16,//10**(4*16),
-        '무':17,
-        '다음단계 무-만':18,
-        '다음단계 무-억':19,
-        '다음단계 무-조':20,
-        '다음단계 무-경':21
+        '만':1n,//10**(4*1),
+        '억':2n,//10**(4*2),
+        '조':3n,//10**(4*3),
+        '경':4n,//10**(4*4),
+        '해':5n,//10**(4*5),
+        '자':6n,//10**(4*6),
+        '양':7n,//10**(4*7),
+        '구':8n,//10**(4*8),
+        '간':9n,//10**(4*9),
+        '정':10n,//10**(4*10),
+        '재':11n,//10**(4*11),
+        '극':12n,//10**(4*12),
+        '항':13n,//10**(4*13),
+        '아':14n,//10**(4*14),
+        '나':15n,//10**(4*15),
+        '불':16n,//10**(4*16),
+        '무':17n,
+        '다음단계 무-만':18n,
+        '다음단계 무-억':19n,
+        '다음단계 무-조':20n,
+        '다음단계 무-경':21n,
+        '다음단계 무-해':22n,
+        '다음단계 무-자':23n,
+        '다음단계 무-양':24n,
+        '다음단계 무-구':25n,
+        '다음단계 무-간':26n,
+        '다음단계 무-정':27n,
+        '다음단계 무-재':28n,
+        '다음단계 무-극':29n,
+        '다음단계 무-항':30n,
+        '다음단계 무-아':31n,
+        '다음단계 무-나':32n,
+        '다음단계 무-불':33n,
     };
 
     function getSelectBox()
@@ -74,10 +84,10 @@
 
     function calc()
     {
-        var asIs = parseInt(document.getElementById('as_is_1st').value);
+        var asIs = BigInt(document.getElementById('as_is_1st').value);
         var asIsUnit = document.getElementById('as_is_1st_unit').options[document.getElementById('as_is_1st_unit').selectedIndex].value;
         var asIsUnitSeq = unit[asIsUnit];
-        var toBe = parseInt(document.getElementById('to_be_1st').value);
+        var toBe = BigInt(document.getElementById('to_be_1st').value);
         var toBeUnit = document.getElementById('to_be_1st_unit').options[document.getElementById('to_be_1st_unit').selectedIndex].value;
         var toBeUnitSeq = unit[toBeUnit];
 
@@ -93,20 +103,55 @@
 
         var gapUnit = toBeUnitSeq - asIsUnitSeq;
 
-        if (gapUnit > 4) {
-            alert('4단위 증가까지만 계산할 수 있어유~ (ex. 억 => 자, 극 => 불)');
-            return false;
+        // if (gapUnit > 4) {
+        //     alert('4단위 증가까지만 계산할 수 있어유~ (ex. 억 => 자, 극 => 불)');
+        //     return false;
+        // }
+
+        //var diff = Math.round((toBe * (10n**(4n*gapUnit))) / asIs);
+        var diff = (toBe * (10n**(4n*gapUnit))) / asIs;
+        var diffString = diff.toString();
+        // console.log('diffString ' + diffString);
+        var diffLength = diffString.length;
+        // console.log('diffLength ' + diffLength);
+
+        if (diff < 10000) {
+            alert('별차이 없어유~ (만배이상만 표시)');
+            return;
         }
 
-        var diff = Math.round((toBe * (10**(4*gapUnit))) / asIs);
+        var cutCount = Math.floor(diffLength / 4);
+        // console.log('cutCount ' + cutCount);
 
-        alert(diff.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '배');
+        var cutLength = diffLength - (cutCount * 4);
+        // console.log('cutLength ' + cutLength);
+
+        var printNumber = diffString.substr(0, cutLength);
+        // console.log('printNumber ' + printNumber);
+        // console.log('printNumberLength ' + printNumber.length);
+
+        if (printNumber.length === 0) { // 10만, 100만, 1000만 단위
+            alert(diffString.substr(0, (diffLength - ((cutCount - 1) * 4))) + getUnit(cutCount - 1) + ' 배'); 
+        } else {
+            alert(printNumber + ' '  + getUnit(cutCount) + ' 배');
+        }
+
+        // alert(diff.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + '배');
     }
 
     function maxLengthCheck(object)
     {
         if(object.value.length > object.maxLength) {
             object.value = object.value.slice(0, object.maxLength);
+        }
+    }
+
+    function getUnit(cutCount)
+    {
+        for(var key in unit) {
+            if (BigInt(cutCount) === unit[key]) {
+                return key;
+            }
         }
     }
 </script>
